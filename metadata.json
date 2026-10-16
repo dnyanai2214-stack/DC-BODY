@@ -1,0 +1,6 @@
+{
+  "name": "DC-Body",
+  "description": "A trustworthy encyclopedia of strange but normal things the human body can do — reflexes, illusions, sounds, tricks, and rare variations in Marathi, Hindi, and English.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

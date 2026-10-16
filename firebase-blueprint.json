@@ -1,0 +1,202 @@
+{
+  "entities": {
+    "Entry": {
+      "title": "Body Oddity Entry",
+      "description": "An educational entry describing a normal human body reflex, sensation, or quirk.",
+      "type": "object",
+      "properties": {
+        "slug": { "type": "string" },
+        "regionId": { "type": "string" },
+        "kindId": { "type": "string" },
+        "howCommon": { "type": "string" },
+        "isTryIt": { "type": "boolean" },
+        "isFeelsScary": { "type": "boolean" },
+        "isFeatured": { "type": "boolean" },
+        "isSponsored": { "type": "boolean" },
+        "imageUrl": { "type": "string" },
+        "views": { "type": "number" },
+        "status": { "type": "string", "enum": ["published", "draft", "scheduled"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["slug", "regionId", "kindId", "status"]
+    },
+    "BlogPost": {
+      "title": "Blog Post",
+      "description": "An editorial article or deep dive.",
+      "type": "object",
+      "properties": {
+        "slug": { "type": "string" },
+        "author": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "status": { "type": "string" },
+        "isSponsored": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["slug", "status"]
+    },
+    "Page": {
+      "title": "Static Page",
+      "description": "Editable page content such as About, Disclaimer, Privacy, Terms.",
+      "type": "object",
+      "properties": {
+        "slug": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["slug"]
+    },
+    "Category": {
+      "title": "Body Region, Kind, or Tag",
+      "description": "Taxonomy item for organizing entries.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "type": "string", "enum": ["region", "kind", "tag"] },
+        "icon": { "type": "string" }
+      },
+      "required": ["id", "type"]
+    },
+    "Suggestion": {
+      "title": "User Suggestion",
+      "description": "User submitted strange body oddity for review.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "bodyRegion": { "type": "string" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "description", "status"]
+    },
+    "InboxMessage": {
+      "title": "Inbox Message",
+      "description": "Contact form inquiry or advertising proposal.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "type": { "type": "string" },
+        "message": { "type": "string" },
+        "read": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "email", "message"]
+    },
+    "Subscriber": {
+      "title": "Newsletter Subscriber",
+      "description": "User email subscribed to DC-Body updates.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "language": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email"]
+    },
+    "SiteSettings": {
+      "title": "Site Settings",
+      "description": "Global website configuration, contact details, and SEO defaults.",
+      "type": "object",
+      "properties": {
+        "siteName": { "type": "string" },
+        "companyName": { "type": "string" },
+        "contactPhone": { "type": "string" },
+        "contactEmail": { "type": "string" }
+      }
+    },
+    "AdConfig": {
+      "title": "Monetization Configuration",
+      "description": "Ad slots, sponsors, adsense and script configurations.",
+      "type": "object",
+      "properties": {
+        "adsensePublisherId": { "type": "string" }
+      }
+    },
+    "AffiliateBlock": {
+      "title": "Affiliate Block",
+      "description": "Monetization product card.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "targetUrl": { "type": "string" },
+        "enabled": { "type": "boolean" }
+      },
+      "required": ["id", "targetUrl"]
+    },
+    "Admin": {
+      "title": "Admin User",
+      "description": "Authorized administrator profile.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["super_admin", "editor"] }
+      },
+      "required": ["email", "role"]
+    },
+    "ActivityLog": {
+      "title": "Activity Log",
+      "description": "Audit trail of admin operations.",
+      "type": "object",
+      "properties": {
+        "userEmail": { "type": "string" },
+        "action": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userEmail", "action"]
+    }
+  },
+  "firestore": {
+    "/entries/{entryId}": {
+      "schema": "Entry",
+      "description": "Public educational body quirk entries."
+    },
+    "/blog/{postId}": {
+      "schema": "BlogPost",
+      "description": "Editorial articles and deep dives."
+    },
+    "/pages/{pageId}": {
+      "schema": "Page",
+      "description": "Static pages such as About, Privacy, Terms, Disclaimer."
+    },
+    "/categories/{categoryId}": {
+      "schema": "Category",
+      "description": "Taxonomy items for body regions, kinds, and tags."
+    },
+    "/suggestions/{suggestionId}": {
+      "schema": "Suggestion",
+      "description": "User suggested quirks submitted from the public site."
+    },
+    "/inbox/{messageId}": {
+      "schema": "InboxMessage",
+      "description": "Contact form submissions and advertising inquiries."
+    },
+    "/subscribers/{subscriberId}": {
+      "schema": "Subscriber",
+      "description": "Email newsletter subscribers."
+    },
+    "/site_settings/{settingId}": {
+      "schema": "SiteSettings",
+      "description": "Global website branding, contact info, and options."
+    },
+    "/ads_config/{configId}": {
+      "schema": "AdConfig",
+      "description": "Ad slots, sponsors, adsense publisher IDs and scripts."
+    },
+    "/affiliates/{affiliateId}": {
+      "schema": "AffiliateBlock",
+      "description": "Affiliate product recommendations."
+    },
+    "/admins/{adminId}": {
+      "schema": "Admin",
+      "description": "Whitelisted administrator users."
+    },
+    "/activity_logs/{logId}": {
+      "schema": "ActivityLog",
+      "description": "Audit records of admin activities."
+    }
+  }
+}

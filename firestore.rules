@@ -1,0 +1,113 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email in ['dnyanai2214@gmail.com', 'dcompany1410@gmail.com'] ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Entries: public read, admin manage, or public view count increment
+    match /entries/{entryId} {
+      allow read: if true;
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin() || (
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['views'])
+      );
+    }
+
+    // Categories (regions, kinds, tags): public read, admin manage
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Blog posts: public read, admin manage, or public view increment
+    match /blog/{postId} {
+      allow read: if true;
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin() || (
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['views'])
+      );
+    }
+
+    // Static pages: public read, admin manage
+    match /pages/{pageId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Site settings: public read, admin manage
+    match /site_settings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Ads config: public read, admin manage, or public impression/click counter update
+    match /ads_config/{configId} {
+      allow read: if true;
+      allow write: if isAdmin() || (
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['slots'])
+      );
+    }
+
+    // Affiliate blocks: public read, admin manage, or public click counter increment
+    match /affiliates/{affiliateId} {
+      allow read: if true;
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin() || (
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['clicks'])
+      );
+    }
+
+    // Public submissions: Suggest an entry
+    match /suggestions/{suggestionId} {
+      allow create: if request.resource.data.title is string &&
+                       request.resource.data.description is string &&
+                       request.resource.data.title.size() <= 300 &&
+                       request.resource.data.description.size() <= 5000;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Public submissions: Contact & Advertise inquiries
+    match /inbox/{messageId} {
+      allow create: if request.resource.data.name is string &&
+                       request.resource.data.email is string &&
+                       request.resource.data.message is string &&
+                       request.resource.data.message.size() <= 5000;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Newsletter subscribers
+    match /subscribers/{subscriberId} {
+      allow create: if request.resource.data.email is string &&
+                       request.resource.data.email.size() <= 200;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Admins list
+    match /admins/{adminId} {
+      allow read, write: if isAdmin();
+    }
+
+    // Activity logs
+    match /activity_logs/{logId} {
+      allow read, write: if isAdmin();
+    }
+  }
+}
